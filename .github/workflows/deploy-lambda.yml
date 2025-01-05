@@ -36,7 +36,7 @@ jobs:
 
     - name: Deploy Lambda using AWS CLI
       run: |
-        aws lambda update-function-code --function-name 'nome-da-sua-lambda' --zip-file fileb://lambda.zip
+        aws lambda update-function-code --function-name 'job-historico-2' --zip-file fileb://lambda.zip
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
