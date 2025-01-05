@@ -35,7 +35,7 @@ jobs:
         cd ..
 
     - name: Deploy Lambda to AWS
-      uses: aws-actions/aws-lambda-deploy@v1.0.0
+      uses: aws-actions/aws-lambda-deploy-action@v1
       with:
         function-name: 'job-historico-2'  # Substitua pelo nome da sua Lambda
         zip-file: 'lambda.zip'
