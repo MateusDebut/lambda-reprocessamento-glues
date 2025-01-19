@@ -16,22 +16,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Create Lambda ZIP
+        run: |
+          zip -r lambda.zip . # Cria o arquivo zip da lambda
+
       - name: Install Terraform
         run: |
           wget https://releases.hashicorp.com/terraform/1.6.0/terraform_1.6.0_linux_amd64.zip || { echo "Failed to download Terraform"; exit 1; }
           sudo apt-get install unzip -y || { echo "Failed to install unzip"; exit 1; }
           unzip terraform_1.6.0_linux_amd64.zip || { echo "Failed to unzip Terraform"; exit 1; }
           sudo mv terraform /usr/local/bin/ || { echo "Failed to move Terraform binary"; exit 1; }
-
-      - name: Create Lambda ZIP
-        run: |
-          zip -r lambda.zip .  # Cria o arquivo lambda.zip com o código da Lambda
-
-      - name: Set up AWS credentials
-        run: |
-          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
-          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
-          echo "AWS_REGION=${{ secrets.AWS_REGION }}" >> $GITHUB_ENV
 
       - name: Initialize Terraform
         run: terraform init
@@ -46,3 +40,7 @@ jobs:
 
       - name: Apply Terraform Deployment
         run: terraform apply -auto-approve tfplan
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
