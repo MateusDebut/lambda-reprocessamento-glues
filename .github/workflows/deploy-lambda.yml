@@ -1,4 +1,4 @@
-name: Deploy Lambda Function
+name: Deploy Lambda Function with Terraform
 
 on:
   push:
@@ -13,31 +13,34 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.12'
+      - name: Install Terraform
+        run: |
+          wget https://releases.hashicorp.com/terraform/1.6.0/terraform_1.6.0_linux_amd64.zip
+          sudo apt-get install unzip
+          unzip terraform_1.6.0_linux_amd64.zip
+          sudo mv terraform /usr/local/bin/
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+      - name: Initialize Terraform
+        run: terraform init
 
-    - name: Zip Lambda function
-      run: |
-        zip -r lambda.zip .
+      - name: Format and Validate Terraform
+        run: |
+          terraform fmt -check
+          terraform validate
 
-    - name: Check AWS CLI Version
-      run: |
-        aws --version
+      - name: Create Lambda ZIP
+        run: |
+          zip -r lambda.zip .
 
-    - name: Deploy Lambda using AWS CLI
-      run: |
-        aws lambda update-function-code --function-name 'job-historico-2' --zip-file fileb://lambda.zip
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_REGION: ${{ secrets.AWS_REGION }}
+      - name: Plan Terraform Deployment
+        run: terraform plan -out=tfplan
+
+      - name: Apply Terraform Deployment
+        run: terraform apply -auto-approve tfplan
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
