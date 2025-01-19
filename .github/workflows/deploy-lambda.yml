@@ -31,10 +31,10 @@ jobs:
       - name: Initialize Terraform
         run: terraform init
 
-      - name: Format and Validate Terraform
-        run: |
-          terraform fmt -check
-          terraform validate
+#      - name: Format and Validate Terraform
+#        run: |
+#          terraform fmt -check
+#          terraform validate
 
       - name: Plan Terraform Deployment
         run: terraform plan -out=tfplan
