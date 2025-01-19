@@ -29,6 +29,9 @@ jobs:
           echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
           echo "AWS_REGION=${{ secrets.AWS_REGION }}" >> $GITHUB_ENV
 
+      - name: Run terraform fmt to fix formatting
+        run: terraform fmt
+
       - name: Initialize Terraform
         run: terraform init
 
