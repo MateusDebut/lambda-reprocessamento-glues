@@ -23,14 +23,15 @@ jobs:
           unzip terraform_1.6.0_linux_amd64.zip || { echo "Failed to unzip Terraform"; exit 1; }
           sudo mv terraform /usr/local/bin/ || { echo "Failed to move Terraform binary"; exit 1; }
 
+      - name: Create Lambda ZIP
+        run: |
+          zip -r lambda.zip .  # Cria o arquivo lambda.zip com o código da Lambda
+
       - name: Set up AWS credentials
         run: |
           echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
           echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
           echo "AWS_REGION=${{ secrets.AWS_REGION }}" >> $GITHUB_ENV
-
-      - name: Run terraform fmt to fix formatting
-        run: terraform fmt
 
       - name: Initialize Terraform
         run: terraform init
@@ -39,10 +40,6 @@ jobs:
         run: |
           terraform fmt -check
           terraform validate
-
-      - name: Create Lambda ZIP
-        run: |
-          zip -r lambda.zip .
 
       - name: Plan Terraform Deployment
         run: terraform plan -out=tfplan
